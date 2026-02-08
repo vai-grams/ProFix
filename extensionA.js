@@ -71,7 +71,7 @@ ${text.split('\n').map((line, i) => `${i+1}: ${line}`).join('\n')}
 
 Respond ONLY with valid JSON array of objects.`;
 
-    const genAI = new GoogleGenerativeAI("AIzaSyB9D7rpSM7Iw2C-pHxahX0Z6gFDsPB2d0k");
+    const genAI = new GoogleGenerativeAI("GEMINI_API");
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     try {
