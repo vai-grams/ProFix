@@ -28,7 +28,7 @@ async function analyzeEdgeCases(context) {
 }
 
 async function analyzeText(text) {
-    const genAI = new GoogleGenerativeAI("AIzaSyAb5iOJnqHADg3V7xhn-qbCZij4SaWNOR4");
+    const genAI = new GoogleGenerativeAI("GEMINI_API");
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const prompt = `Act as a Senior Software QA Engineer and Lead Developer. 
