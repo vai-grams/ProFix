@@ -26,7 +26,7 @@ async function analyzeSelection(context) {
         cancellable: false
     }, async () => {
         try {
-            let analysis = await analyzeText(selectedText);
+            const analysis = await analyzeText(selectedText);
 
             if (!analysis || analysis.length === 0) {
                 vscode.window.showInformationMessage('No issues found in the selected text.');
@@ -43,58 +43,63 @@ async function analyzeSelection(context) {
 }
 
 async function analyzeText(text) {
-    const prompt = `Detect the language of the following code snippet. Then analyze following code for potential issues, edge cases, vulnerabilities, or improvements.
-Number the lines starting from 1 in that particular language only, do not include any comments in the corrected code and only change the line which has incorrect code do not change any other lines. If a fix requires adding a NEW line (e.g., a missing header or semicolon), 
-the "fix" field should include the original line plus the new line separated by space.Example: "original": "#include <stdio.h>","fix": "#include<stdio.h> #include <string.h>"
+    const prompt = `Analyze the following code for potential issues, edge cases, vulnerabilities, or improvements.
+    
+    STRICT RULES:
+    1. If the error includes VLA (Variable Length Array) error, ignore it.
+    2. For missing headers: flag it on Line 1. The fix should be: "#include <header.h> \\n [original line 1]".
+    3. Multi-line fixes: Use "\\n" for line breaks.
+    4. Return ONLY a JSON array of objects. Do not include comments in the fixed code.
 
-STRICT RULES FOR "FIX" GENERATION:
-1. If the error includes VLA error then ignore it as its value will be determined at runtime and cannot be fixed by static code changes. Do not return any fix for VLA errors.
-2. MULTI-LINE FIXES: If a fix requires adding new lines (like adding a missing bracket '}' or memory allocation), use the string literal "\\n" to denote a line break.
-3. MISSING HEADERS: If a standard library function is used without its header (e.g., 'strcmp' without <string.h>), flag it as an error on Line 1. The fix should be: "#include <header.h>" + [original line 1 content].
-4. FORMATTING: Return RAW JSON only. Do not use Markdown backticks. Do not add conversational text. Do not use \\n or line breaks in the "fix" field.
+    Response Format:
+    [
+      {
+        "lineNumber": number,
+        "severity": "Error" | "Warning" | "Info",
+        "finding": "Description",
+        "original": "Original line text",
+        "fix": "Corrected line text",
+        "explanation": "Why"
+      }
+    ]
 
-Response Format (JSON Array of Objects):
-[
-  {
-    "lineNumber": number,
-    "severity": "Error" | "Warning" | "Info",
-    "finding": "Concise description of the specific error",
-    "original": "The exact content of the problematic line",
-    "fix": "The corrected code (use space for multiple lines)",
-    "explanation": "Why this fix is necessary"
-  }
-]
-If no critical issues are found, return [].
+    Code to analyze:
+    ${text.split('\n').map((line, i) => `${i + 1}: ${line}`).join('\n')}
+    
+    Respond with valid JSON only.`;
 
-Code:
-${text.split('\n').map((line, i) => `${i+1}: ${line}`).join('\n')}
-
-Respond ONLY with valid JSON array of objects.`;
-
-    const genAI = new GoogleGenerativeAI("GEMINI_API");
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    // 1. Ensure you use a valid model name (e.g., gemini-1.5-flash or gemini-2.0-flash-exp)
+    const genAI = new GoogleGenerativeAI("GEMINI_API"); 
+    const model = genAI.getGenerativeModel({ 
+        model: "gemini-2.5-flash",
+        generationConfig: {
+            responseMimeType: "application/json" // This forces the model to be a JSON machine
+        }
+    });
 
     try {
         const result = await model.generateContent(prompt);
-        const response = result.response;
+        let jsonText = result.response.text().trim();
 
-        if (response.promptFeedback?.blockReason) {
-            return [];
+        // 2. Extra safety: Clean up Markdown backticks if the model ignores the MIME type
+        if (jsonText.includes('```')) {
+            jsonText = jsonText.replace(/```json|```/g, '').trim();
         }
 
-        let jsonText = response.text().trim();
-        if (jsonText.startsWith('```json')) {
-            jsonText = jsonText.slice(7, -3).trim();
-        } else if (jsonText.startsWith('```')) {
-            jsonText = jsonText.slice(3, -3).trim();
-        }
+        const parsed = JSON.parse(jsonText);
+        
+        // 3. Log for debugging (Check the "Extension Host" output tab)
+        console.log("Analysis successful. Issues found:", parsed.length);
+        
+        return parsed;
 
-        return JSON.parse(jsonText);
     } catch (error) {
+        // 4. Detailed error logging
+        console.error("Gemini Analysis Error:", error);
+        vscode.window.showErrorMessage("Failed to parse AI response. Check Output console.");
         return [];
     }
 }
-
 function showAnalysisWebview(analysis, context, editor, selection) {
     if (analysisPanel) {
         analysisPanel.reveal(vscode.ViewColumn.Beside);
@@ -181,8 +186,8 @@ function getAnalysisWebviewContent(analysis) {
         .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
         .stats-and-chart { display: flex; align-items: center; gap: 15px; }
         .stats-wrapper { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-weight: bold; text-align: right; }
-        .errors-found-all { color: #f14c4c; }
-        .errors-fixed-all { color: #4ec9b0; }
+        .errors-found-all { color: #fa0000; }
+        .errors-fixed-all { color: #ff0000; }
         .progress-ring { transform: rotate(-90deg); }
         .progress-ring__circle { transition: stroke-dashoffset 0.35s; transform-origin: 50% 50%; stroke-linecap: round; }
         table { width: 100%; border-collapse: collapse; }
