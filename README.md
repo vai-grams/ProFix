@@ -1,65 +1,79 @@
-# profix README
+ProFix 🛠️
+ProFix is an advanced developer productivity extension for Visual Studio Code designed to automate the detection of logical vulnerabilities and syntax errors. By leveraging intelligent code analysis, ProFix empowers developers to write resilient, production-ready code while minimizing the debugging lifecycle.
 
-This is the README for your extension "profix". After writing up a brief description, we recommend including the following sections.
 
-## Features
+1. Edge Case Scan
+Stop bugs before they reach production. This feature performs a deep heuristic analysis of your selected function’s logic and workflow.
+Predictive Analysis: Identifies specific input scenarios (edge cases) where your logic may fail or return unexpected results.
+Contextual Intelligence: Provides a concise, high-level explanation of why a specific case causes a failure.
+Remediation: Offers optimized code snippets to handle identified vulnerabilities.
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+2. Selection Scan & "Instant-Fix"
+A precision tool for real-time error correction and code hardening.
+Dynamic Error Detection: Scans selected blocks for syntax errors, logical bottlenecks, and anti-patterns.
+One-Click Refactoring: Includes a dedicated "FIX" button that automatically patches the incorrect code directly in your active editor window.
+Efficiency Driven: Eliminates the manual "Copy-Paste" loop, keeping you in the flow state.
 
-For example if there is an image subfolder under your extension project workspace:
 
-\!\[feature X\]\(images/feature-x.png\)
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+🚀 Key Features
+Intuitive Dashboard: A clean, responsive interface for error handling.
 
-## Requirements
+Efficient Workflow: Optimized logic to reduce effort by.
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+Real-time Updates: Stay informed with live notifications and status tracking.
 
-## Extension Settings
+Extensible Design: Modular codebase allowing for easy integration of third-party APIs.
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
 
-For example:
+🛠️ Tech Stack
+Platform: VS Code Extension API
 
-This extension contributes the following settings:
+Language: JavaScript
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+Analysis Engine: Google Gemini
+Model : Gemini 2.5 flash
 
-## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
 
-## Release Notes
+📋 Prerequisites
+Before you begin, ensure you have the following installed:
+- Node.js
 
-Users appreciate release notes as you update your extension.
 
-### 1.0.0
+⚙️ Installation & Setup
+Clone the Repository:
 
-Initial release of ...
+Bash
+git clone https://github.com/vai-grams/ProFix.git
+cd ProFix
 
-### 1.0.1
+Install Dependencies:
 
-Fixed issue #.
+Bash
+npm install node-fetch
 
-### 1.1.0
+API_KEY=your_gemini_key
 
-Added features X, Y, and Z.
+Run the Application:
 
----
+1.In VS code open ProFix folder.
+2.Press F5 to launch "Extension Development Host".
+3.Now open you code files here.
+4.Select the code, you'll get "ProFix" option inside command pallet.
+5.Under "ProFix" there are two submenus for running "Selection Scan" and "Edge Cases Scan" 
+6.Click on whicever you want to use.
 
-## Working with Markdown
 
-You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
+🤝 Contributing
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated.
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets
+📄 License
+Distributed under the MIT License. See LICENSE for more information.
 
-## For more information
+📧 Contact
+Project Lead: - @vai_grams
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+Project Link: https://github.com/vai-grams/ProFix
 
-**Enjoy!**
+Developed with ❤️ by the ProFix Team(Runtime Terrors@code.init(NITC)).
